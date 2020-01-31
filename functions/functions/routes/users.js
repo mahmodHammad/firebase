@@ -1,5 +1,7 @@
 const { db } = require("../helpers/admin");
 const { firebase } = require("../helpers/firebase");
+const {validate} = require('../helpers/validate')
+
 module.exports.signup = (req, res) => {
   const user = {
     name: req.body.name,
@@ -11,11 +13,13 @@ module.exports.signup = (req, res) => {
   };
   let usertoken, userid;
 
-  //unique name
+  //   validation
+  const errors = validate(user , true);
+  if (Object.keys(errors).length > 0) return res.status(400).json({ errors });
+
   db.doc(`/users/${user.name}`)
     .get()
     .then(doc => {
-      console.log(doc.exists);
       if (doc.exists) {
         return res.status(400).json({ name: "this name is already taken" });
       } else {
@@ -48,6 +52,8 @@ module.exports.signup = (req, res) => {
       res.status(400).json({ error: err.code });
     });
 };
+
+
 
 // module.exports.getpost = (req, res) => {
 //     db.collection("posts")
