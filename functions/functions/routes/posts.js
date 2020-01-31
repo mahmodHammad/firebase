@@ -1,14 +1,14 @@
 const {db} = require('../helpers/admin')
 module.exports.makepost = (req, res) => {
     const user = {
-      name: req.body.name,
+      name: req.user.name,
       body: req.body.body,
       createdAt: new Date().toISOString()
     };
     db.collection("posts")
       .add(user)
       .then(d => {
-        res.json(d);
+        res.json(`post ${d.id} created !`);
       })
       .catch(err => console.error(err));
   };

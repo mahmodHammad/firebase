@@ -19,7 +19,9 @@ const admin_uploads_offectial = {
       }
     }
   ],
-  dof3aName: "2nd Electrical"
+  dof3aName: "2nd Electrical",
+  year : 2020,
+  drive:"drive link"
 };
 
 const admin_uploads_private = {
@@ -43,5 +45,6 @@ const admin_uploads_private = {
       body: "body",
       createdAt: "date"
     }
-  ]
+  ],
+  year : 2020
 };
