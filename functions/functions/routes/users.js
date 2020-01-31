@@ -1,6 +1,6 @@
 const { db } = require("../helpers/admin");
 const { firebase } = require("../helpers/firebase");
-const {validate} = require('../helpers/validate')
+const { validate } = require("../helpers/validate");
 
 module.exports.signup = (req, res) => {
   const user = {
@@ -14,14 +14,15 @@ module.exports.signup = (req, res) => {
   let usertoken, userid;
 
   //   validation
-  const errors = validate(user , true);
+  let errors = validate(user, true);
   if (Object.keys(errors).length > 0) return res.status(400).json({ errors });
 
   db.doc(`/users/${user.name}`)
     .get()
     .then(doc => {
       if (doc.exists) {
-        return res.status(400).json({ name: "this name is already taken" });
+        errors.name = "this name is already taken";
+        return res.status(400).json({ errors });
       } else {
         return firebase
           .auth()
@@ -53,18 +54,28 @@ module.exports.signup = (req, res) => {
     });
 };
 
+module.exports.login = (req, res) => {
+  const input = {
+    email: req.body.email,
+    password: req.body.password
+  };
+  let errors = validate(input, false);
+  if (Object.keys(errors).length > 0) return res.status(400).json({ errors });
 
+  firebase
+    .auth()
+    .signInWithEmailAndPassword(input.email, input.password)
+    .then(data => {
+        console.log("data*****" , data)
 
-// module.exports.getpost = (req, res) => {
-//     db.collection("posts")
-//       .orderBy("createdAt", "desc")
-//       .get()
-//       .then(data => {
-//         let posts = [];
-
-//         data.forEach(d => {
-//           posts.push({ postid: d.id, ...d.data() });
-//         });
-//         return res.json(posts);
-//       });
-//   };
+        return data.user.getIdToken()
+    }).then(token=>{
+        return res.json({token})
+    }).catch(err=>{
+        if(err.code="auth/user-not-found"){
+            res.status(403).json({error:'wrong creadentials please try again '})
+        }
+        console.log(err)
+        return res.status(500).json({error: err.code})
+    })
+};

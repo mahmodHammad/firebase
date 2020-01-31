@@ -23,7 +23,7 @@ module.exports.validate = (user, isSignup = false) => {
     errors.email = notvalid;
   }
   if (isEmpty(user.password)) {
-    errors.user = emptyerr;
+    errors.password = emptyerr;
   }
   if (isSignup) {
     if (isEmpty(user.confirmPassword)) {
